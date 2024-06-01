@@ -5,6 +5,7 @@ var terminal_icon = document.getElementById("terminal_icon")
 var c = 0;
 
 class Folder{
+    parent;
     folderContent = [];
     folderName;
 
@@ -35,7 +36,8 @@ class fileSystem{
     currentFolder;
     parentDir;
     constructor(addOutputFunction){
-        this.root = new Folder("root");
+        this.root = new Folder("home");
+        this.root.parent = this.root;
         this.currentFolder = this.root;
         this.addOutputFunc = addOutputFunction;
     }
@@ -51,6 +53,20 @@ class fileSystem{
         }
     }
 
+    getFullPath(){
+        let path = "";
+        let currFolder = this.currentFolder;
+
+        while(this.currentFolder.folderName != "home"){
+            console.log("fname: " + this.currentFolder.folderName);
+            path = "/" + this.currentFolder.folderName + path;
+            this.currentFolder = this.currentFolder.parent;
+        }
+        this.currentFolder = currFolder;
+        console.log(path);
+        return "/home" + path;
+    }
+
     createFile(_fileName_){
         let newFile = new File(_fileName_);
         this.currentFolder.folderContent.push(newFile);
@@ -58,23 +74,25 @@ class fileSystem{
 
     createFolder(_folderName_){
         let newFolder = new Folder(_folderName_);
+        newFolder.parent = this.currentFolder;
         this.currentFolder.folderContent.push(newFolder);
     }
 
     changeDirectory(_dirName_){
         if(_dirName_ == ".."){
-            this.currentFolder = this.parentDir;
+            this.currentFolder = this.currentFolder.parent;
             return 1;
         }
         for(let i = 0; i < this.currentFolder.folderContent.length; i++){
             this.type = this.currentFolder.folderContent[i].getClassName();
             if(this.type == "Folder"){
                 if(this.currentFolder.folderContent[i].folderName == _dirName_){
-                    this.parentDir = this.currentFolder;
                     this.currentFolder = this.currentFolder.folderContent[i];
+                    return 1;
                 }
             }
         }
+        this.addOutputFunc("cd: No such file or directory: " + _dirName_);
     }
 
     remove(_name_){
@@ -95,7 +113,7 @@ class fileSystem{
                 }
             }
         }
-        this.addOutputFunc("No file/folder exists with this name!");
+        this.addOutputFunc("rm: cannot remove '" + _name_ + "': No such file or directory.");
         return 0;
     }
 }
@@ -196,6 +214,9 @@ class Terminal {
                 this.addOutput("    - mkdir: 'Create a folder.'");
                 this.addOutput("    - touch: 'Create a file.'");
                 this.addOutput("    - ls: 'Lists the content of a folder.'");
+                this.addOutput("    - cd: 'Allows you to move between directories.'");
+                this.addOutput("    - rm: 'Remove from your current directory a file or a folder.'");
+                this.addOutput("    - pwd: 'Prints the absolute path of your current directory.'");
                 break;
             case 'mkdir':
                 if(args.length == 0 || args.length > 1)
@@ -226,7 +247,7 @@ class Terminal {
                     this.filesystem.changeDirectory(args[0]);
                 break;
             case 'pwd':
-                this.addOutput(this.filesystem.currentFolder.folderName);
+                this.addOutput(this.filesystem.getFullPath());
                 break;
 
             default:
