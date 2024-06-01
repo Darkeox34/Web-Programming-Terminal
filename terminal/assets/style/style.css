@@ -71,9 +71,39 @@ body {
     overflow: auto;
     resize: both;
 }
+.editing_filename{
+    width: 100%
+}
+.nano_area {
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    padding: 3px;
+    background-color: #300A24;
+    color: rgb(255, 255, 255);
+    width: 600px;
+    height: 450px;
+    min-height: 200px;
+    min-width: 350px;
+    max-width: 100%;
+    max-height: 100%;
+    font-family: monospace;
+    border-bottom-left-radius: 3px;
+    border-bottom-right-radius: 3px;
+    cursor: default;
+    border: black;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    overflow: auto;
+    resize: both;
+    display: none;
+}
 
 .terminal_input:focus {
     outline: none;
+}
+
+.nano_input:focus{
+    outline:none;
 }
 
 .terminal_output::selection {

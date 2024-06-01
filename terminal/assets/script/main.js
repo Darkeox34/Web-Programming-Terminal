@@ -19,11 +19,12 @@ class Folder{
 }
 
 class File{
-    content;
+    fileContent;
     fileName;
 
     constructor(_fileName_){
         this.fileName = _fileName_;
+        this.fileContent = "";
     }
     getClassName(){
         return this.constructor.name;
@@ -40,6 +41,10 @@ class fileSystem{
         this.root.parent = this.root;
         this.currentFolder = this.root;
         this.addOutputFunc = addOutputFunction;
+    }
+
+    editFile(){
+
     }
 
     printCurrentFolderContent(){
@@ -159,6 +164,8 @@ class Terminal {
         this.fixed_line.appendChild(this.terminal_input);
         this.terminal_input.focus();
 
+        this.initNano();
+
         this.bar.addEventListener("mousedown", (mouse) => {
             this.drag = true;
             this.posX = mouse.offsetX;
@@ -189,8 +196,44 @@ class Terminal {
                 console.log(`Container moved to: ${this.container.style.left}, ${this.container.style.top}`);
             }
         });
+        document.addEventListener("keydown", (event) => {
+            if (event.ctrlKey && event.key === 'x') {
+                event.preventDefault();
+                if (this.nano_area.style.display === "block") {
+                    let nanoContent = this.nano_input.innerText;
+                    this.nano_area.style.display = "none";
+                    this.nano_input.innerText = "";
+                    this.text_area.style.display = "block";
+                    this.terminal_input.focus();
+                    this.setFileContent(this.currentEditingFile, nanoContent);
+                    this.currentEditingFile = null;
+                }
+            }
+        });
     }
 
+
+    initNano() {
+        this.nano_area = document.createElement("div");
+        this.nano_area.className = "nano_area";
+        this.container.appendChild(this.nano_area);
+
+        this.editing_filename = document.createElement("p");
+        this.editing_filename.className = "editing_filename";
+
+        this.nano_area.appendChild(this.editing_filename);
+
+        this.nano_input = document.createElement("span");
+        this.nano_input.contentEditable = "true";
+        this.nano_input.className = "nano_input";
+
+        this.nano_input.style.display = "block";
+
+        this.nano_area.appendChild(this.nano_input);
+
+        this.nano_input.focus();
+        this.nano_area.style.display = "none";
+    }
     addOutput(string) {
         let output_line = document.createElement("div");
         output_line.innerHTML = string;
@@ -198,6 +241,56 @@ class Terminal {
         console.log("Appending output: ", string);
         this.terminal_output.appendChild(output_line);
         console.log("Output appended!");
+    }
+
+    getFileContent(_filename_){
+        for(let i = 0; i < this.filesystem.currentFolder.folderContent.length; i++){
+            if(this.filesystem.currentFolder.folderContent[i].getClassName() == "File"){
+                if(this.filesystem.currentFolder.folderContent[i].fileName == _filename_){
+                    return this.filesystem.currentFolder.folderContent[i].fileContent;
+                }
+            }
+        }
+        return 0;
+    }
+
+    searchFile(_filename_){
+        for(let i = 0; i < this.filesystem.currentFolder.folderContent.length; i++){
+            if(this.filesystem.currentFolder.folderContent[i].getClassName() == "File"){
+                if(this.filesystem.currentFolder.folderContent[i].fileName == _filename_){
+                    return 1;
+                }
+            }
+        }
+        return 0;
+    }
+
+    setFileContent(_filename_, _content_){
+        for(let i = 0; i < this.filesystem.currentFolder.folderContent.length; i++){
+            if(this.filesystem.currentFolder.folderContent[i].getClassName() == "File"){
+                if(this.filesystem.currentFolder.folderContent[i].fileName == _filename_){
+                    return this.filesystem.currentFolder.folderContent[i].fileContent = _content_;
+                }
+            }
+        }
+        return 0;
+    }
+
+    cat(_filename_){
+        this.addOutput(this.getFileContent(_filename_));
+    }
+
+
+    nano(_filename_) {
+        this.text_area.style.display = "none";
+        this.nano_area.style.display = "block"
+        this.editing_filename.innerText ="Editing " + _filename_ + ":";
+        console.log(this.nano_area.style.display);
+        this.nano_input.innerText = this.getFileContent(_filename_);
+        this.nano_area.addEventListener("click", () => {
+            this.nano_input.focus();
+        });
+        this.currentEditingFile = _filename_;
     }
 
     executeCommand(command) {
@@ -211,28 +304,34 @@ class Terminal {
             case 'help':
                 this.addOutput("Available Commands:");
                 this.addOutput("    - clear: 'Clear the contents of the terminal.'");
+                this.addOutput("    - echo: 'Display a line of text.'");
                 this.addOutput("    - mkdir: 'Create a folder.'");
                 this.addOutput("    - touch: 'Create a file.'");
                 this.addOutput("    - ls: 'Lists the content of a folder.'");
                 this.addOutput("    - cd: 'Allows you to move between directories.'");
                 this.addOutput("    - rm: 'Remove from your current directory a file or a folder.'");
                 this.addOutput("    - pwd: 'Prints the absolute path of your current directory.'");
+                this.addOutput("    - nano: 'Allows you to edit files.'");
+                this.addOutput("    - cat: 'Prints the content of a file.'");
+
                 break;
             case 'mkdir':
                 if(args.length == 0 || args.length > 1)
-                    this.addOutput("Usage: mkdir <folderName>");
+                    this.addOutput("Usage: mkdir (folderName)");
                 else
                     this.filesystem.createFolder(args[0]);
                 break;
             case 'touch':
                 if(args.length == 0 || args.length > 1)
-                    this.addOutput("Usage: touch <fileName>");
+                    this.addOutput("Usage: touch (fileName)");
+                else if(this.searchFile(args[0]) == 1)
+                    this.addOutput("File already exists with this name!");
                 else
                     this.filesystem.createFile(args[0]);
                 break;
             case 'rm':
                 if(args.length == 0 || args.length > 1)
-                    this.addOutput("Usage: rm <name>");
+                    this.addOutput("Usage: rm (name)");
                 else
                     this.filesystem.remove(args[0]);
                 break;
@@ -242,16 +341,49 @@ class Terminal {
                 break;
             case 'cd':
                 if(args.length == 0 || args.lenght > 1)
-                    this.addOutput("Usage: cd <directory>");
+                    this.addOutput("Usage: cd (directory)");
                 else
                     this.filesystem.changeDirectory(args[0]);
                 break;
             case 'pwd':
                 this.addOutput(this.filesystem.getFullPath());
                 break;
+            case 'echo':
+                if(args.length == 0 || args.lenght > 1)
+                    this.addOutput("Usage: echo (string)");
+                else
+                    this.addOutput(args[0]);
+                break;
+
+            case 'nano':
+                if(args.length == 0 || args.lenght > 1)
+                    this.addOutput("Usage: nano (file)");
+                else{
+                    if(this.searchFile(args[0]) == 0){
+                        this.addOutput("nano: No such file: " + args[0])
+                    }else{
+                    this.nano(args[0]);
+                    }
+                }
+                break;
+            
+            case 'cat':
+                if(args.length == 0 || args.lenght > 1)
+                    this.addOutput("Usage: cat (file)");
+                else{
+                    if(this.searchFile(args[0]) == 0){
+                        this.addOutput("cat: No such file: " + args[0])
+                    }else{
+                    this.cat(args[0]);
+                    }
+                }
+                break;
+
+
 
             default:
-                this.addOutput("Command not found!");
+                this.addOutput("Command not found! Write help to see all available commands!");
+
         }
     }
 
