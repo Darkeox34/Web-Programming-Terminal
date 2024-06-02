@@ -182,6 +182,8 @@ class Terminal {
             } else {
                 this.container.style.width = "";
                 this.container.style.height = "";
+                this.text_area.style.width = "";
+                this.text_area.style.width = "";
                 this.isMaximized = false;
             }
         });
