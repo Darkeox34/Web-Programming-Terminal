@@ -342,8 +342,16 @@ class Terminal {
             case 'cd':
                 if(args.length == 0 || args.lenght > 1)
                     this.addOutput("Usage: cd (directory)");
-                else
+                else{
                     this.filesystem.changeDirectory(args[0]);
+                    if(this.filesystem.currentFolder.folderName != "home")
+                        this.fixed_line.innerText = "antonio@ubuntu:" + this.filesystem.getFullPath() + "$  ";
+                    else
+                        this.fixed_line.innerText = "antonio@ubuntu:~$  ";
+                    this.fixed_line.appendChild(this.fixed_text);
+                    this.fixed_line.appendChild(this.terminal_input);
+                    this.terminal_input.focus();
+                }
                 break;
             case 'pwd':
                 this.addOutput(this.filesystem.getFullPath());
@@ -378,9 +386,6 @@ class Terminal {
                     }
                 }
                 break;
-
-
-
             default:
                 this.addOutput("Command not found! Write help to see all available commands!");
 
@@ -391,7 +396,11 @@ class Terminal {
         let command = this.terminal_input.innerHTML;
         console.log("Executing command: ", command);
         this.terminal_input.innerHTML = "";
-        this.addOutput("antonio@ubuntu:~$  " + command);
+        if(this.filesystem.currentFolder.folderName != "home")
+            this.addOutput("antonio@ubuntu:" + this.filesystem.getFullPath() + "$  " + command)
+        else
+            this.addOutput("antonio@ubuntu:~$  " + command);
+
         this.executeCommand(command);
     }
 }
