@@ -132,6 +132,7 @@ class Terminal {
         this.posX = 0;
         this.posY = 0;
         this.drag = false;
+        this.isMinimized = false;
         this.isMaximized = false;
 
         this.container = document.createElement("div");
@@ -164,15 +165,23 @@ class Terminal {
 
         this.minimizeButton.addEventListener("click", () => {
             this.container.style.display = "none";
+            terminal_icon.style.backgroundColor = "#555";
+            this.isMinimized = true;
         });
         this.maximizeButton.addEventListener("click", () => {
             if (!this.isMaximized) {
-                this.container.style.width = "100%";
-                this.container.style.height = "100%";// Adjust according to your layout
+                this.container.style.width = "98vw";
+                this.container.style.height = "100vh";
+                this.text_area.style.width = "100%";
+                this.text_area.style.height = "100%";
+                this.nano_area.style.width = "100%";
+                this.nano_area.style.height = "100%";
+                this.container.style.left = "3.7vw";
+                this.container.style.top = "0vw";
                 this.isMaximized = true;
             } else {
-                this.container.style.width = ""; // Reset width to default
-                this.container.style.height = ""; // Reset height to default
+                this.container.style.width = "";
+                this.container.style.height = "";
                 this.isMaximized = false;
             }
         });
@@ -279,6 +288,38 @@ class Terminal {
         console.log("Output appended!");
     }
 
+    getWeather(city) {
+        const apiKey = '7ed282e2ddf412965da08fe6d31c85d6';
+        const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
+
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                if (data.cod === 200) {
+                    console.log(data.main);
+                    const temperature = data.main.temp;
+                    const humidity = data.main.humidity;
+                    const temp_max = data.main.temp_max;
+                    const temp_min = data.main.temp_min;
+                    const weatherDescription = data.weather[0].description;
+                    const windSpeed = data.wind.speed;
+                    this.addOutput(`Weather in ${city}:`);
+                    this.addOutput(`    - Temperature: ${temperature} °C`);
+                    this.addOutput(`    - Min Temperature: ${temp_min} °C`);
+                    this.addOutput(`    - Max Temperature: ${temp_max} °C`);
+                    this.addOutput(`    - Description: ${weatherDescription}`);
+                    this.addOutput(`    - Wind Speed: ${windSpeed} m/s`);
+                    this.addOutput(`    - Humidity: ${humidity} %`);
+                } else {
+                    this.addOutput(`Error: ${data.message}`);
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching weather data:', error);
+                this.addOutput('Error fetching weather data');
+            });
+    }
+
     getFileContent(_filename_){
         for(let i = 0; i < this.filesystem.currentFolder.folderContent.length; i++){
             if(this.filesystem.currentFolder.folderContent[i].getClassName() == "File"){
@@ -350,6 +391,7 @@ class Terminal {
                 this.addOutput("    - nano: 'Allows you to edit files.'");
                 this.addOutput("    - cat: 'Prints the content of a file.'");
                 this.addOutput("    - exit: 'Close the terminal.'");
+                this.addOutput("    - weather: 'Get a response about weather in a specific city.'");
 
                 break;
             case 'mkdir':
@@ -426,6 +468,13 @@ class Terminal {
             case 'exit':
                 this.container.remove();
                 c-=1;
+            case 'weather':
+                if (args.length == 0 || args.length > 1) {
+                    this.addOutput("Usage: weather (cityName)");
+                } else {
+                    this.getWeather(args[0]);
+                }
+                break;
             default:
                 this.addOutput("Command not found! Write help to see all available commands!");
 
@@ -453,6 +502,9 @@ terminal_icon.addEventListener("click", function () {
         console.log("Terminal instance created");
     }
     else{
+        this.isMinimized = false;
+        terminal_icon.style.backgroundColor = "transparent";
+        terminal_icon.style.transition = "background-color 0.3s";
         terminalInstance.container.style.display = "block";
     }
 });

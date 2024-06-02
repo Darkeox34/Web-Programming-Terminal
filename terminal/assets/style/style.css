@@ -18,19 +18,11 @@ body {
     z-index: inherit;
 }
 
-.terminal_icon{
-    background-color: transparent;
-    position: absolute;
-    cursor: pointer;
-    border: none;
-    top: 5%;
-    left: 5%;
-}
+
 
 .bar {
     width: 100%;
     height: 30px;
-    border: 1px solid black;
     border-top-left-radius: 5px;
     border-top-right-radius: 5px;
     border-bottom-left-radius: 0%;
@@ -39,20 +31,14 @@ body {
     position: relative;
 }
 
-.tool_bar {
-    position: absolute;
-    background-color: transparent;
-    bottom: 0px;
-    width: 100%;
-    height: 60px;
-    left: 0px;
-    z-index: 100;
-}
+
 
 .text_area {
     background-repeat: no-repeat;
     background-size: cover;
     background-position: center;
+    border-bottom-left-radius: 3px;
+    border-bottom-right-radius: 3px;
     padding: 3px;
     background-color: #300A24;
     color: rgb(255, 255, 255);
@@ -63,12 +49,11 @@ body {
     max-width: 100%;
     max-height: 100%;
     font-family: monospace;
-    border-bottom-left-radius: 3px;
-    border-bottom-right-radius: 3px;
+
     cursor: default;
     border: black;
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-    overflow: auto;
+    overflow: hidden;
     resize: both;
 }
 .editing_filename{
@@ -93,7 +78,7 @@ body {
     cursor: default;
     border: black;
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-    overflow: auto;
+    overflow: hidden;
     resize: both;
     display: none;
 }
@@ -115,12 +100,12 @@ body {
     position: absolute;
     top: 0;
     left: 0;
-    width: 48px; /* Adjust width as needed */
+    width: 48px; 
     height: 100%;
     background-color: #333333;
     color: #fff;
     padding-top: 20px;
-    z-index: 1000; /* Ensure it's above other elements */
+    z-index: 1000;
     text-align: center;
     opacity: 90%;
 }
@@ -131,8 +116,8 @@ body {
     margin: 0;
 }
 .ubuntu_logo img {
-    width: 32px; /* Adjust logo size to 128x128 */
-    height: 32px; /* Added height to maintain aspect ratio */
+    width: 32px; 
+    height: 32px;
     margin-bottom: 20px;
 }
 .app_icon {
