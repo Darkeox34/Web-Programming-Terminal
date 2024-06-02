@@ -184,6 +184,8 @@ class Terminal {
                 this.container.style.height = "";
                 this.text_area.style.width = "";
                 this.text_area.style.width = "";
+                this.nano_area.style.width = "";
+                this.nano_area.style.height = "";
                 this.isMaximized = false;
             }
         });
@@ -254,6 +256,7 @@ class Terminal {
                     this.terminal_input.focus();
                     this.setFileContent(this.currentEditingFile, nanoContent);
                     this.currentEditingFile = null;
+                    this.addOutput("File correctly saved!");
                 }
             }
         });

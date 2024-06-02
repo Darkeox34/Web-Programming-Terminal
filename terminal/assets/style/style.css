@@ -145,22 +145,12 @@ body {
 }
 
 .button.close-button {
-    background-color: orange;
     border-radius: 50%;
     padding: 5px;
     color: white;
 }
 
-.button.close-button:hover {
-    background-color: darkorange;
-}
-
 .button:not(.close-button) {
-    border-radius: 50%;
     padding: 5px;
     color: #aaa;
-}
-
-.button:not(.close-button):hover {
-    background-color: #ddd;
 }
