@@ -110,3 +110,72 @@ body {
     background-color: white;
     color: black;
 }
+
+.left_bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 48px; /* Adjust width as needed */
+    height: 100%;
+    background-color: #333333;
+    color: #fff;
+    padding-top: 20px;
+    z-index: 1000; /* Ensure it's above other elements */
+    text-align: center;
+    opacity: 90%;
+}
+
+.app_list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+.ubuntu_logo img {
+    width: 32px; /* Adjust logo size to 128x128 */
+    height: 32px; /* Added height to maintain aspect ratio */
+    margin-bottom: 20px;
+}
+.app_icon {
+    background-color: transparent;
+    border: none;
+    color: #fff;
+    font-size: 24px;
+    cursor: pointer;
+    padding: 10px;
+    margin-bottom: 10px;
+    transition: background-color 0.3s;
+}
+
+.app_icon:hover {
+    background-color: #555;
+}
+
+.button {
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
+    outline: none;
+    padding: 0;
+    margin: 0;
+}
+
+.button.close-button {
+    background-color: orange;
+    border-radius: 50%;
+    padding: 5px;
+    color: white;
+}
+
+.button.close-button:hover {
+    background-color: darkorange;
+}
+
+.button:not(.close-button) {
+    border-radius: 50%;
+    padding: 5px;
+    color: #aaa;
+}
+
+.button:not(.close-button):hover {
+    background-color: #ddd;
+}

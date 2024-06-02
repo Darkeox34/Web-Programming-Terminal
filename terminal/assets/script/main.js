@@ -132,6 +132,7 @@ class Terminal {
         this.posX = 0;
         this.posY = 0;
         this.drag = false;
+        this.isMaximized = false;
 
         this.container = document.createElement("div");
         this.container.className = "container";
@@ -140,6 +141,41 @@ class Terminal {
         this.bar = document.createElement("div");
         this.bar.className = "bar";
         this.container.appendChild(this.bar);
+
+        this.closeButton = document.createElement("button");
+        this.closeButton.innerHTML = "<i class='fa-solid fa-circle-xmark'></i>";
+        this.closeButton.className = "button";
+        this.bar.appendChild(this.closeButton);
+
+        this.minimizeButton = document.createElement("button");
+        this.minimizeButton.innerHTML = "<i class='fas fa-window-minimize'></i>"; 
+        this.minimizeButton.className = "button";
+        this.bar.appendChild(this.minimizeButton);
+
+        this.maximizeButton = document.createElement("button");
+        this.maximizeButton.innerHTML = "<i class='fas fa-window-maximize'></i>"; 
+        this.maximizeButton.className = "button";
+        this.bar.appendChild(this.maximizeButton);
+
+        this.closeButton.addEventListener("click", () => {
+            this.container.remove();
+            c-=1;
+        });
+
+        this.minimizeButton.addEventListener("click", () => {
+            this.container.style.display = "none";
+        });
+        this.maximizeButton.addEventListener("click", () => {
+            if (!this.isMaximized) {
+                this.container.style.width = "100%";
+                this.container.style.height = "100%";// Adjust according to your layout
+                this.isMaximized = true;
+            } else {
+                this.container.style.width = ""; // Reset width to default
+                this.container.style.height = ""; // Reset height to default
+                this.isMaximized = false;
+            }
+        });
 
         this.text_area = document.createElement("div");
         this.text_area.className = "text_area";
@@ -313,6 +349,7 @@ class Terminal {
                 this.addOutput("    - pwd: 'Prints the absolute path of your current directory.'");
                 this.addOutput("    - nano: 'Allows you to edit files.'");
                 this.addOutput("    - cat: 'Prints the content of a file.'");
+                this.addOutput("    - exit: 'Close the terminal.'");
 
                 break;
             case 'mkdir':
@@ -386,6 +423,9 @@ class Terminal {
                     }
                 }
                 break;
+            case 'exit':
+                this.container.remove();
+                c-=1;
             default:
                 this.addOutput("Command not found! Write help to see all available commands!");
 
@@ -404,13 +444,16 @@ class Terminal {
         this.executeCommand(command);
     }
 }
-
+let terminalInstance;
 
 terminal_icon.addEventListener("click", function () {
-    if (c === 0) {
-        let terminalInstance = new Terminal();
+    if (c == 0) {
+        terminalInstance = new Terminal();
         c += 1;
         console.log("Terminal instance created");
+    }
+    else{
+        terminalInstance.container.style.display = "block";
     }
 });
 
