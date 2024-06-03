@@ -21,6 +21,7 @@ class Folder{
 class File{
     fileContent;
     fileName;
+    perms = new Array(3);
 
     constructor(_fileName_){
         this.fileName = _fileName_;
@@ -41,10 +42,6 @@ class fileSystem{
         this.root.parent = this.root;
         this.currentFolder = this.root;
         this.addOutputFunc = addOutputFunction;
-    }
-
-    editFile(){
-
     }
 
     printCurrentFolderContent(){
@@ -325,6 +322,11 @@ class Terminal {
             });
     }
 
+    executeScript(_filename_){
+        this.command = this.getFileContent(_filename_);
+        this.executeCommand(this.command); 
+    }
+
     getFileContent(_filename_){
         for(let i = 0; i < this.filesystem.currentFolder.folderContent.length; i++){
             if(this.filesystem.currentFolder.folderContent[i].getClassName() == "File"){
@@ -379,110 +381,118 @@ class Terminal {
         this.commandsHistory.push(command);
         const args = command.trim().split(' ');
         const cmd = args.shift();
-        switch(cmd){
-            case 'clear':
-                this.terminal_output.innerHTML = "";
-                break;
-            case 'help':
-                this.addOutput("Available Commands:");
-                this.addOutput("    - clear: 'Clear the contents of the terminal.'");
-                this.addOutput("    - echo: 'Display a line of text.'");
-                this.addOutput("    - mkdir: 'Create a folder.'");
-                this.addOutput("    - touch: 'Create a file.'");
-                this.addOutput("    - ls: 'Lists the content of a folder.'");
-                this.addOutput("    - cd: 'Allows you to move between directories.'");
-                this.addOutput("    - rm: 'Remove from your current directory a file or a folder.'");
-                this.addOutput("    - pwd: 'Prints the absolute path of your current directory.'");
-                this.addOutput("    - nano: 'Allows you to edit files.'");
-                this.addOutput("    - cat: 'Prints the content of a file.'");
-                this.addOutput("    - exit: 'Close the terminal.'");
-                this.addOutput("    - weather: 'Get a response about weather in a specific city.'");
+        
+        if(cmd.startsWith("./")){
+            console.log("Executing the script of the file: " + cmd.substring(2));
+            this.executeScript(cmd.substring(2));
+        }else
+        {
+            switch(cmd){
+                case 'clear':
+                    this.terminal_output.innerHTML = "";
+                    break;
+                case 'help':
+                    this.addOutput("Available Commands:");
+                    this.addOutput("    - clear: 'Clear the contents of the terminal.'");
+                    this.addOutput("    - echo: 'Display a line of text.'");
+                    this.addOutput("    - mkdir: 'Create a folder.'");
+                    this.addOutput("    - touch: 'Create a file.'");
+                    this.addOutput("    - ls: 'Lists the content of a folder.'");
+                    this.addOutput("    - cd: 'Allows you to move between directories.'");
+                    this.addOutput("    - rm: 'Remove from your current directory a file or a folder.'");
+                    this.addOutput("    - pwd: 'Prints the absolute path of your current directory.'");
+                    this.addOutput("    - nano: 'Allows you to edit files.'");
+                    this.addOutput("    - cat: 'Prints the content of a file.'");
+                    this.addOutput("    - exit: 'Close the terminal.'");
+                    this.addOutput("    - weather: 'Get a response about weather in a specific city.'");
+                    break;
 
-                break;
-            case 'mkdir':
-                if(args.length == 0 || args.length > 1)
-                    this.addOutput("Usage: mkdir (folderName)");
-                else
-                    this.filesystem.createFolder(args[0]);
-                break;
-            case 'touch':
-                if(args.length == 0 || args.length > 1)
-                    this.addOutput("Usage: touch (fileName)");
-                else if(this.searchFile(args[0]) == 1)
-                    this.addOutput("File already exists with this name!");
-                else
-                    this.filesystem.createFile(args[0]);
-                break;
-            case 'rm':
-                if(args.length == 0 || args.length > 1)
-                    this.addOutput("Usage: rm (name)");
-                else
-                    this.filesystem.remove(args[0]);
-                break;
-            case 'ls':
-                console.log("Printing file content!")
-                this.filesystem.printCurrentFolderContent();
-                break;
-            case 'cd':
-                if(args.length == 0 || args.lenght > 1)
-                    this.addOutput("Usage: cd (directory)");
-                else{
-                    this.filesystem.changeDirectory(args[0]);
-                    if(this.filesystem.currentFolder.folderName != "home")
-                        this.fixed_line.innerText = "antonio@ubuntu:" + this.filesystem.getFullPath() + "$  ";
+                case 'mkdir':
+                    if(args.length == 0 || args.length > 1)
+                        this.addOutput("Usage: mkdir (folderName)");
                     else
-                        this.fixed_line.innerText = "antonio@ubuntu:~$  ";
-                    this.fixed_line.appendChild(this.fixed_text);
-                    this.fixed_line.appendChild(this.terminal_input);
-                    this.terminal_input.focus();
-                }
-                break;
-            case 'pwd':
-                this.addOutput(this.filesystem.getFullPath());
-                break;
-            case 'echo':
-                if(args.length == 0 || args.lenght > 1)
-                    this.addOutput("Usage: echo (string)");
-                else
-                    this.addOutput(args[0]);
-                break;
-
-            case 'nano':
-                if(args.length == 0 || args.lenght > 1)
-                    this.addOutput("Usage: nano (file)");
-                else{
-                    if(this.searchFile(args[0]) == 0){
-                        this.addOutput("nano: No such file: " + args[0])
-                    }else{
-                    this.nano(args[0]);
+                        this.filesystem.createFolder(args[0]);
+                    break;
+                case 'touch':
+                    if(args.length == 0 || args.length > 1)
+                        this.addOutput("Usage: touch (fileName)");
+                    else if(this.searchFile(args[0]) == 1)
+                        this.addOutput("File already exists with this name!");
+                    else
+                        this.filesystem.createFile(args[0]);
+                    break;
+                case 'rm':
+                    if(args.length == 0 || args.length > 1)
+                        this.addOutput("Usage: rm (name)");
+                    else
+                        this.filesystem.remove(args[0]);
+                    break;
+                case 'ls':
+                    console.log("Printing file content!")
+                    this.filesystem.printCurrentFolderContent();
+                    
+                    break;
+                case 'cd':
+                    if(args.length == 0 || args.lenght > 1)
+                        this.addOutput("Usage: cd (directory)");
+                    else{
+                        this.filesystem.changeDirectory(args[0]);
+                        if(this.filesystem.currentFolder.folderName != "home")
+                            this.fixed_line.innerText = "antonio@ubuntu:" + this.filesystem.getFullPath() + "$  ";
+                        else
+                            this.fixed_line.innerText = "antonio@ubuntu:~$  ";
+                        this.fixed_line.appendChild(this.fixed_text);
+                        this.fixed_line.appendChild(this.terminal_input);
+                        this.terminal_input.focus();
                     }
-                }
-                break;
-            
-            case 'cat':
-                if(args.length == 0 || args.lenght > 1)
-                    this.addOutput("Usage: cat (file)");
-                else{
-                    if(this.searchFile(args[0]) == 0){
-                        this.addOutput("cat: No such file: " + args[0])
-                    }else{
-                    this.cat(args[0]);
-                    }
-                }
-                break;
-            case 'exit':
-                this.container.remove();
-                c-=1;
-            case 'weather':
-                if (args.length == 0 || args.length > 1) {
-                    this.addOutput("Usage: weather (cityName)");
-                } else {
-                    this.getWeather(args[0]);
-                }
-                break;
-            default:
-                this.addOutput("Command not found! Write help to see all available commands!");
+                    break;
+                case 'pwd':
+                    this.addOutput(this.filesystem.getFullPath());
+                    break;
+                case 'echo':
+                    if(args.length == 0 || args.lenght > 1)
+                        this.addOutput("Usage: echo (string)");
+                    else
+                        this.addOutput(args[0]);
+                    break;
 
+                case 'nano':
+                    if(args.length == 0 || args.lenght > 1)
+                        this.addOutput("Usage: nano (file)");
+                    else{
+                        if(this.searchFile(args[0]) == 0){
+                            this.addOutput("nano: No such file: " + args[0])
+                        }else{
+                        this.nano(args[0]);
+                        }
+                    }
+                    break;
+                
+                case 'cat':
+                    if(args.length == 0 || args.lenght > 1)
+                        this.addOutput("Usage: cat (file)");
+                    else{
+                        if(this.searchFile(args[0]) == 0){
+                            this.addOutput("cat: No such file: " + args[0])
+                        }else{
+                        this.cat(args[0]);
+                        }
+                    }
+                    break;
+                case 'exit':
+                    this.container.remove();
+                    c-=1;
+                case 'weather':
+                    if (args.length == 0 || args.length > 1) {
+                        this.addOutput("Usage: weather (cityName)");
+                    } else {
+                        this.getWeather(args[0]);
+                    }
+                    break;
+                default:
+                    this.addOutput("Command not found! Write help to see all available commands!");
+
+            }
         }
     }
 
