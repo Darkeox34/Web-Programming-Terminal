@@ -4,6 +4,15 @@ var terminal_icon = document.getElementById("terminal_icon")
 
 var c = 0;
 
+var old_left;
+var old_top;
+var old_width;
+var old_height;
+
+var old_txt_width;
+var old_txt_height;
+
+
 class Folder{
     parent;
     folderContent = [];
@@ -167,6 +176,12 @@ class Terminal {
         });
         this.maximizeButton.addEventListener("click", () => {
             if (!this.isMaximized) {
+                old_left = this.container.style.left;
+                old_top = this.container.style.top;
+                old_width = this.container.style.width;
+                old_height = this.container.style.height;
+                old_txt_width = this.text_area.style.width;
+                old_txt_height = this.text_area.style.height;
                 this.container.style.width = "98vw";
                 this.container.style.height = "100vh";
                 this.text_area.style.width = "100%";
@@ -177,10 +192,12 @@ class Terminal {
                 this.container.style.top = "0vw";
                 this.isMaximized = true;
             } else {
-                this.container.style.width = "";
-                this.container.style.height = "";
-                this.text_area.style.width = "";
-                this.text_area.style.width = "";
+                this.container.style.left = old_left;
+                this.container.style.top = old_top;
+                this.container.style.width = old_width;
+                this.container.style.height = old_height;
+                this.text_area.style.width = old_txt_width;
+                this.text_area.style.height = old_txt_height;
                 this.nano_area.style.width = "";
                 this.nano_area.style.height = "";
                 this.isMaximized = false;
@@ -366,6 +383,8 @@ class Terminal {
 
 
     nano(_filename_) {
+        this.nano_area.style.width = this.text_area.style.width;
+        this.nano_area.style.height = this.text_area.style.height;
         this.text_area.style.display = "none";
         this.nano_area.style.display = "block"
         this.editing_filename.innerText ="Editing " + _filename_ + ":";

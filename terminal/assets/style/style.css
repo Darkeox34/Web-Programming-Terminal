@@ -28,6 +28,8 @@ body {
     border-bottom-left-radius: 0%;
     background-color: #222222;
     z-index: inherit;
+    display:flex;
+    justify-content: flex-start;
     position: relative;
 }
 
@@ -142,15 +144,7 @@ body {
     outline: none;
     padding: 0;
     margin: 0;
-}
-
-.button.close-button {
     border-radius: 50%;
     padding: 5px;
-    color: white;
-}
-
-.button:not(.close-button) {
-    padding: 5px;
-    color: #aaa;
+    color: rgb(185, 177, 177);
 }
